@@ -17,12 +17,7 @@ export interface ReviewPanelProps {
   }) => void;
 }
 
-export function ReviewPanel({
-  visible,
-  extracted,
-  scored,
-  onConfirm,
-}: ReviewPanelProps) {
+export function ReviewPanel({ visible, extracted, scored, onConfirm }: ReviewPanelProps) {
   const { ext, setExt, buyer, setBuyer, canSubmit, ALL_EXTRACTED_ORDER } = useReviewForm(extracted);
   const [activeFormId, setActiveFormId] = useState<(typeof HCD_FORM_REVIEW_ORDER)[number]>(
     HCD_FORM_REVIEW_ORDER[0],
