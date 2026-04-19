@@ -1,0 +1,57 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "title-transfer-api"
+version = "0.1.0"
+description = "FastAPI backend for Title Transfer Agent"
+requires-python = ">=3.13"
+dependencies = [
+  "fastapi>=0.136.0",
+  "uvicorn[standard]>=0.44.0",
+  "pydantic>=2.13.2",
+  "pydantic-settings>=2.13.1",
+  "httpx>=0.28.1",
+  "python-multipart>=0.0.26",
+  "pypdf>=6.10.2",
+  "pymupdf>=1.27.2.2",
+]
+
+[project.optional-dependencies]
+dev = [
+  "ruff>=0.15.11",
+  "mypy>=1.20.1",
+  "pytest>=8.0.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "SIM", "TCH", "RUF", "ASYNC", "S"]
+ignore = ["S101", "TC001", "TC003", "ASYNC240", "RUF006", "B008"]
+
+[tool.ruff.lint.per-file-ignores]
+"src/pipeline/form_maps.py" = ["E501"]
+"src/pipeline/merge.py" = ["E501"]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+warn_unreachable = true
+disallow_untyped_decorators = false
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = ["pymupdf.*", "fitz"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

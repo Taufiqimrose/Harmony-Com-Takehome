@@ -1,0 +1,12 @@
+{
+  "name": "title-transfer-agent",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -k -n web,api \"npm run dev --prefix apps/web\" \"npm run dev --prefix apps/api\"",
+    "install:all": "npm install --prefix apps/web && npm install --prefix apps/api",
+    "lint": "npm run lint --prefix apps/web"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
