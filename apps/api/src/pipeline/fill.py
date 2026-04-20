@@ -7,7 +7,13 @@ import logging
 
 from src.pipeline.events import broadcast
 from src.pipeline.fill_acro import detect_acro_fields, fill_acroform
-from src.pipeline.fill_io import pdf_page_count, render_thumb, write_stub_pdf, write_zip
+from src.pipeline.fill_io import (
+    pdf_page_count,
+    rasterize_pdf,
+    render_thumb,
+    write_stub_pdf,
+    write_zip,
+)
 from src.pipeline.form_maps import ACRO_FIELD_MAPS
 from src.pipeline.forms_assets import ensure_form_assets
 from src.pipeline.merge import build_merged_payload
@@ -59,14 +65,24 @@ async def run_fill(job: JobState) -> None:
             available_fields = await asyncio.to_thread(detect_acro_fields, blank_path)
             acro_map = ACRO_FIELD_MAPS.get(form_id, {})
             if available_fields and acro_map:
+                interactive = paths.filled_dir / f".{filename}.interactive.pdf"
                 fields_written = await asyncio.to_thread(
                     fill_acroform,
                     blank_path,
-                    out,
+                    interactive,
                     acro_map,
                     merged,
                     available_fields,
                 )
+                # Rasterize the filled PDF so checkbox/radio marks render reliably
+                # in all viewers (macOS Preview/Quartz skips certain regions on the
+                # HCD templates; Chrome/PDFium handles them fine). The raster output
+                # is the final customer-facing PDF.
+                await asyncio.to_thread(rasterize_pdf, interactive, out)
+                try:
+                    interactive.unlink()
+                except OSError:
+                    logger.warning("failed to unlink %s", interactive)
                 fill_mode = "acroform"
             else:
                 title = f"HCD Transfer — {form_id}"

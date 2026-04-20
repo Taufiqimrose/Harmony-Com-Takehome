@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "concurrently -k -n web,api \"npm run dev --prefix apps/web\" \"npm run dev --prefix apps/api\"",
     "install:all": "npm install --prefix apps/web && npm install --prefix apps/api",
+    "install:api": "pip install -e \"apps/api[dev]\"",
     "lint": "npm run lint --prefix apps/web"
   },
   "devDependencies": {
